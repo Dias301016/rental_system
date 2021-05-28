@@ -1,0 +1,29 @@
+<html xmlns:th="http:///www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layout/main.html">
+
+<div class="container" layout:fragment="main_content">
+    <form th:action="@{'/addcategory'}" method="post">
+        <input type="text"   name="name">
+        <button>add category</button>
+    </form>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Name</th>
+            <th scope="col">Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each = "ctg:${categories}">
+            <td th:text = ${ctg.id}></td>
+            <td th:text = ${ctg.name}></td>
+        </tr>
+        </tbody>
+
+    </table>
+
+</div>

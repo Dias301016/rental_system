@@ -1,0 +1,22 @@
+<html xmlns:th="http:///www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layout/main.html">
+
+<div class="container" layout:fragment="main_content">
+        <form th:action="@{'/addproduct'}" method="post">
+            <input type="text"   name="name">
+            <input type="text"   name="description">
+            <input type="number" name="price">
+            <select name="category_id">
+                <option th:each="ctg:${categories}" th:text="${ctg.name}" th:value = "${ctg.id}">
+
+                </option>
+            </select>
+            <button>add item</button>
+
+        </form>
+
+    </div>
+
+</html>

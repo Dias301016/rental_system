@@ -1,0 +1,36 @@
+<html xmlns:th="http:///www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        layout:decorator="layout/main.html">
+
+<div class="container" layout:fragment="main_content">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Description</th>
+            <th scope="col">Category</th>
+            <th scope="col">Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each = "it:${producty}">
+            <td th:text = ${it.id}></td>
+            <td th:text = ${it.name}></td>
+            <td th:text = ${it.price}></td>
+            <td th:text = ${it.description}></td>
+            <td th:text = ${it.category.name}></td>
+            <td> <a th:href="@{'/details/' + ${it.id}}" >  >Details</a></td>
+        </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<html xmlns:th="http:///www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layout/main.html">
+
+<div class="container" layout:fragment="main_content">
+        <div>
+        <form th:action="@{'/saveproduct'}" method="post">
+            <input type="hidden" name="id" th:value="${product.id}">
+            <input type="text"   name="name"  th:value="${product.name}">
+            <input type="text"   name="description" th:value="${product.description}">
+            <input type= "number" name="price" th:value="${product.price}">
+            <select name="category_id">
+                <option th:each="ctg:${categories}" th:text="${ctg.name}" th:value = "${ctg.id}" th:selected="${product!=null&&product.category!=null&&product.category.id == ctg.id}">
+
+                </option>
+            </select>
+            <button>save item</button>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProductModal">
+                Delete
+            </button>
+
+    </form>
+
+
+
+             <!-- Modal -->
+            <div class="modal fade" id="deleteProductModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form th:action="${'/deleteproduct'}" method="post">
+                        <input type="hidden" name="id" th:value="${product.id}">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel"></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                         <h5>Are you sure?</h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button class="btn btn-danger">ok</button>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+     <div>
+         <table class="table">
+             <tbody>
+                    <tr th:each="kwd:${keyword}">
+                        <form th:action="@{'/assignkeyword'}" method="post">
+                            <input type="hidden" th:value="${kwd.id}" name="keywords_id">
+                            <input type="hidden" th:value="${product.id}" name="products_id">
+                            <td th:text="${kwd.name}"></td>
+                            <td width="10%">
+                                <button class="btn btn-success bt-sm"> + </button>
+                            </td>
+                        </form>
+
+                    </tr>
+
+
+             </tbody>
+
+
+
+         </table>
+
+
+     </div>
+
+</div>
+</html>
