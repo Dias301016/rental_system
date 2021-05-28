@@ -15,11 +15,13 @@
 
                 </option>
             </select>
+            <div class="form-group">
             <button>save item</button>
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProductModal">
+            <button type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#deleteProductModal">
                 Delete
             </button>
+            </div>
 
     </form>
 
@@ -32,7 +34,7 @@
                         <input type="hidden" name="id" th:value="${product.id}">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel"></h5>
+                            <h5 class="modal-title" id="staticBackdropLabel">Are you sure?</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -48,6 +50,22 @@
             </div>
         </div>
      <div>
+         <div id="keywordDiv">
+             <table class="table">
+                 <tbody>
+                 <tr th:each="kwd:${product.keywords}">
+                     <form th:action="@{'/unassignkeyword'}" method="post">
+                         <input type="hidden" th:value="${kwd.id}" name="keywords_id">
+                         <input type="hidden" th:value="${product.id}" name="products_id">
+                    <td th:text="${kwd.name}"></td>
+                     <td width="10%">
+                         <button class="btn btn-danger   bt-sm"> - </button>
+                     </td>
+                     </form>
+                 </tr>
+                 </tbody>
+             </table>
+         </div>
          <table class="table">
              <tbody>
                     <tr th:each="kwd:${keyword}">

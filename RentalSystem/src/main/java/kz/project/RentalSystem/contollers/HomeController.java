@@ -65,6 +65,7 @@ public class HomeController {
         Products product = productService.getProduct(id);
         model.addAttribute("product",product);
         List<Keywords> keywords = productService.getAllKeywords();
+        keywords.removeAll(product.getKeywords());
         model.addAttribute("keyword",keywords);
         List<Categories> categories = productService.getAllCategories();
         model.addAttribute("categories", categories);
@@ -134,8 +135,8 @@ public class HomeController {
         }
         return "redirect:/";
     }
-    @PostMapping(value = "/deleteproduct")
-    public String deleteProduct(@RequestParam(name = "id") Long id){
+    @PostMapping(value ="/deleteproduct")
+    public String deleteProduct(@RequestParam(name = "id",defaultValue = "0") Long id){
 
         Products product = productService.getProduct(id);
         if(product!=null){
@@ -143,6 +144,34 @@ public class HomeController {
         }
         return "redirect:/";
 
+
+    }
+    @PostMapping(value = "/unassignkeyword")
+    public String unAssignKeyword(@RequestParam(name="products_id") Long productId,
+                                @RequestParam(name="keywords_id") Long keywordId){
+
+        Keywords keyword = productService.getKeyword(keywordId);
+        if(keyword!=null){
+            Products product = productService.getProduct(productId);
+            if(product!=null){
+
+                List<Keywords> keywords = product.getKeywords();
+                if(keywords==null){
+                    keywords = new ArrayList<>();
+                }
+                keywords.remove(keyword);
+                productService.saveProduct(product);
+
+                return "redirect:/details/"+productId+"#keywordDiv";
+
+            }
+
+
+
+
+        }
+
+        return "redirect:/";
 
     }
     @PostMapping(value = "/assignkeyword")
@@ -161,7 +190,7 @@ public class HomeController {
                     keywords.add(keyword);
                     productService.saveProduct(product);
 
-                    return "redirect:/details/"+productId;
+                    return "redirect:/details/"+productId+"#keywordDiv";
 
                     }
 
