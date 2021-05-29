@@ -37,6 +37,7 @@ public class HomeController {
     }
 
     @GetMapping(path = "/addproduct")
+    @PreAuthorize("isAuthenticated()")
     public String addProduct(Model model) {
         model.addAttribute("currentUser",getUserData());
 
@@ -121,12 +122,15 @@ public class HomeController {
         List<Keywords> keywords = productService.getAllKeywords();
         keywords.removeAll(product.getKeywords());
         model.addAttribute("keyword",keywords);
+        List<Users> users = userService.getAllUsers();
+        model.addAttribute("users",users);
         List<Categories> categories = productService.getAllCategories();
         model.addAttribute("categories", categories);
         return "details";
     }
 
     @GetMapping(value = "/addcategory")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')")
     public String addCategory(Model model){
         model.addAttribute("currentUser",getUserData());
         List<Categories> categories = productService.getAllCategories();
@@ -145,6 +149,7 @@ public class HomeController {
 
     }
     @GetMapping(value = "/categorydetails/{idshka2}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')")
     public String categoryDetails(Model model, @PathVariable(name = "idshka2") Long id){
         Categories category = productService.getCategory(id);
         model.addAttribute("category", category);
@@ -152,7 +157,49 @@ public class HomeController {
         return "categorydetails";
     }
 
+    @GetMapping(value = "/addkeyword")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')")
+    public String addKeyword(Model model){
+        model.addAttribute("currentUser",getUserData());
+        List<Keywords> keywords = productService.getAllKeywords();
+        model.addAttribute("keywords", keywords);
+        return "addkeyword";
 
+    }
+    @PostMapping(value = "/addkeyword")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')")
+    public String addKeyword(@RequestParam(name = "name",defaultValue = "No item") String name){
+
+        Keywords kwd = new Keywords();
+        kwd.setName(name);
+        productService.addKeyword(kwd);
+        return "redirect:/addkeyword";
+
+    }
+    @GetMapping(value = "/keyworddetails/{idshka2}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')")
+    public String keywordDetails(Model model, @PathVariable(name = "idshka2") Long id){
+        Keywords keyword = productService.getKeyword(id);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("currentUser",getUserData());
+        return "keyworddetails";
+    }
+
+    @GetMapping(value = "/saveproduct/{idshka}")
+    @PreAuthorize("isAuthenticated()")
+    public String saveProduct(Model model, @PathVariable(name = "idshka") Long id){
+        Products product = productService.getProduct(id);
+        model.addAttribute("product",product);
+        model.addAttribute("currentUser",getUserData());
+        List<Keywords> keywords = productService.getAllKeywords();
+        keywords.removeAll(product.getKeywords());
+        model.addAttribute("keyword",keywords);
+        List<Users> users = userService.getAllUsers();
+        model.addAttribute("users",users);
+        List<Categories> categories = productService.getAllCategories();
+        model.addAttribute("categories", categories);
+        return "saveproduct";
+    }
     @PostMapping(value = "/savecategory")
     public String saveCategory (
             @RequestParam(name = "id",defaultValue = "0") Long id,
@@ -167,6 +214,21 @@ public class HomeController {
             }
         return "redirect:/addcategory";
     }
+    @PostMapping(value = "/savekeyword")
+    public String saveKeyword(
+            @RequestParam(name = "id",defaultValue = "0") Long id,
+            @RequestParam(name = "name",defaultValue = "No item") String name)
+
+    {
+        Keywords kwd = productService.getKeyword(id);
+
+        if(kwd!=null) {
+            kwd.setName(name);
+            productService.saveCategory(kwd);
+        }
+        return "redirect:/addkeyword";
+    }
+
 
 
     @PostMapping(value = "/saveproduct")
@@ -219,7 +281,7 @@ public class HomeController {
                 keywords.remove(keyword);
                 productService.saveProduct(product);
 
-                return "redirect:/details/"+productId+"#keywordDiv";
+                return "redirect:/saveproduct/"+productId+"#keywordDiv";
 
             }
 
@@ -269,7 +331,7 @@ public class HomeController {
                     keywords.add(keyword);
                     productService.saveProduct(product);
 
-                    return "redirect:/details/"+productId+"#keywordDiv";
+                    return "redirect:/saveproduct/"+productId+"#keywordDiv";
 
                     }
 

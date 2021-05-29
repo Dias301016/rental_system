@@ -4,7 +4,7 @@
       layout:decorator="layout/main.html">
 
 <div class="container" layout:fragment="main_content">
-    <form th:action="@{'/addcategory'}" method="post">
+    <form th:action="@{'/addkeyword'}" method="post">
         <input type="text"   name="name">
         <button>add category</button>
     </form>
@@ -18,10 +18,10 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each = "ctg:${categories}">
-            <td th:text = ${ctg.id}></td>
-            <td th:text = ${ctg.name}></td>
-            <td> <a th:href="@{'/categorydetails/' + ${ctg.id}}" >  >Details</a></td>
+        <tr th:each = "kwd:${keywords}">
+            <td th:text = ${kwd.id}></td>
+            <td th:text = ${kwd.name}></td>
+            <td> <a th:href="@{'/keyworddetails/' + ${kwd.id}}" >  >Details</a></td>
         </tr>
         </tbody>
 

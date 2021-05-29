@@ -1,0 +1,14 @@
+<html xmlns:th="http:///www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layout/main.html">
+
+<div class="container" layout:fragment="main_content">
+    <form th:action="@{'/savekeyword'}" method="post">
+        <input type="hidden" name="id" th:value="${keyword.id}">
+        <input type="text"   name="name"  th:value="${keyword.name}">
+        <button>save keyword</button>
+
+    </form>
+
+</div>
