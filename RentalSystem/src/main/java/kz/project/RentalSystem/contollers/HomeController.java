@@ -1,10 +1,12 @@
 package kz.project.RentalSystem.contollers;
 
+import kz.project.RentalSystem.config.WebMvcConfig;
 import kz.project.RentalSystem.entities.Categories;
 import kz.project.RentalSystem.entities.Keywords;
 import kz.project.RentalSystem.entities.Products;
 import kz.project.RentalSystem.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +21,6 @@ import java.util.List;
 public class HomeController {
     @Autowired
     private ProductService productService;
-
 
     @GetMapping(value = "/")
     public String home(Model model) {
@@ -172,6 +173,23 @@ public class HomeController {
         }
 
         return "redirect:/";
+
+    }
+    @GetMapping(value = "/403")
+    public String deniedPage(Model model){
+        return "403";
+
+    }
+    @GetMapping(value = "/login")
+    public String loginPage(Model model){
+        return "login";
+
+    }
+
+    @GetMapping(value = "/profile")
+    @PreAuthorize("isAuthenticated()")
+    public String profilePage(Model model){
+        return "profile";
 
     }
     @PostMapping(value = "/assignkeyword")
