@@ -30,6 +30,9 @@ public class Products {
     @ManyToOne(fetch = FetchType.EAGER)
     private Categories category;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Users author;
+
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Keywords> keywords;
 

@@ -15,10 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,18 +48,20 @@ public class HomeController {
 
     @PostMapping(value = "/addproduct")
     public String addProduct(@RequestParam(name = "category_id",defaultValue = "0") Long id,
+            @RequestParam(name = "author_id",defaultValue = "0") Long authorId,
         @RequestParam(name = "name", defaultValue = "No item") String name,
         @RequestParam(name = "description", defaultValue = "NO DESCR") String description,
         @RequestParam(name = "price", defaultValue = "0") int price)
         {
             Categories ctg = productService.getCategory(id);
-
+            Users usr = userService.getUser(authorId);
             if(ctg!=null) {
                 Products product = new Products();
                 product.setName(name);
                 product.setPrice(price);
                 product.setDescription(description);
                 product.setCategory(ctg);
+                product.setAuthor(usr);
                 productService.addProduct(product);
 
             }
@@ -81,6 +80,38 @@ public class HomeController {
             return null;
 
         }
+
+
+     @GetMapping(value = "/register")
+     public String register(Model model){
+
+        model.addAttribute("currentUser",getUserData());
+        return "register";
+
+     }
+
+     @PostMapping(value = "/register")
+     public String toRegister(@RequestParam(name ="user_email") String email,
+                              @RequestParam(name = "user_password") String password,
+                              @RequestParam(name ="re_user_password") String rePassword,
+                              @RequestParam(name = "user_first_name") String firstName)
+    {
+
+        if(password.equals(rePassword)){
+            Users newUser = new Users();
+            newUser.setFName(firstName);
+            newUser.setPassword(password);
+            newUser.setEmail(email);
+
+            if (userService.createUser(newUser)!=null){
+                return "redirect:/register?success";
+
+
+            }
+
+        }
+        return "redirect:/register?error";
+     }
 
     @GetMapping(value = "/details/{idshka}")
     public String details(Model model, @PathVariable(name = "idshka") Long id){
@@ -212,6 +243,8 @@ public class HomeController {
         return "login";
 
     }
+
+
 
     @GetMapping(value = "/profile")
     @PreAuthorize("isAuthenticated()")
