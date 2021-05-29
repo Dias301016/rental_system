@@ -1,0 +1,10 @@
+<html xmlns:th="http:///www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layout/main.html">
+
+<div class="container" layout:fragment="main_content">
+
+    <h3> <span th:text="${currentUser.fName}"></span></h3>
+
+</div>

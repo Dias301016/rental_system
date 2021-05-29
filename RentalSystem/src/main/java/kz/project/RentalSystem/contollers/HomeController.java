@@ -4,9 +4,15 @@ import kz.project.RentalSystem.config.WebMvcConfig;
 import kz.project.RentalSystem.entities.Categories;
 import kz.project.RentalSystem.entities.Keywords;
 import kz.project.RentalSystem.entities.Products;
+import kz.project.RentalSystem.entities.Users;
 import kz.project.RentalSystem.services.ProductService;
+import kz.project.RentalSystem.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +27,11 @@ import java.util.List;
 public class HomeController {
     @Autowired
     private ProductService productService;
-
+    @Autowired
+    private UserService userService;
     @GetMapping(value = "/")
     public String home(Model model) {
+        model.addAttribute("currentUser",getUserData());
         List<Products> products = productService.getAllProducts();
         model.addAttribute("producty", products);
         List<Categories> categories = productService.getAllCategories();
@@ -33,6 +41,7 @@ public class HomeController {
 
     @GetMapping(path = "/addproduct")
     public String addProduct(Model model) {
+        model.addAttribute("currentUser",getUserData());
 
         List<Categories> categories = productService.getAllCategories();
         model.addAttribute("categories", categories);
@@ -61,10 +70,23 @@ public class HomeController {
         return "redirect:/";
         }
 
+        private Users getUserData(){
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if(!(authentication instanceof AnonymousAuthenticationToken)){
+                User secUser = (User)authentication.getPrincipal();
+                Users myUser = userService.getUserByEmail(secUser.getUsername());
+            return myUser;
+            }
+            return null;
+
+        }
+
     @GetMapping(value = "/details/{idshka}")
     public String details(Model model, @PathVariable(name = "idshka") Long id){
         Products product = productService.getProduct(id);
         model.addAttribute("product",product);
+        model.addAttribute("currentUser",getUserData());
         List<Keywords> keywords = productService.getAllKeywords();
         keywords.removeAll(product.getKeywords());
         model.addAttribute("keyword",keywords);
@@ -75,12 +97,14 @@ public class HomeController {
 
     @GetMapping(value = "/addcategory")
     public String addCategory(Model model){
+        model.addAttribute("currentUser",getUserData());
         List<Categories> categories = productService.getAllCategories();
         model.addAttribute("categories", categories);
             return "/addcategory";
 
     }
     @PostMapping(value = "/addcategory")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')")
     public String addCategory(@RequestParam(name = "name",defaultValue = "No item") String name){
 
        Categories ctg = new Categories();
@@ -93,6 +117,7 @@ public class HomeController {
     public String categoryDetails(Model model, @PathVariable(name = "idshka2") Long id){
         Categories category = productService.getCategory(id);
         model.addAttribute("category", category);
+        model.addAttribute("currentUser",getUserData());
         return "categorydetails";
     }
 
@@ -177,11 +202,13 @@ public class HomeController {
     }
     @GetMapping(value = "/403")
     public String deniedPage(Model model){
+        model.addAttribute("currentUser",getUserData());
         return "403";
 
     }
     @GetMapping(value = "/login")
     public String loginPage(Model model){
+        model.addAttribute("currentUser",getUserData());
         return "login";
 
     }
@@ -189,6 +216,7 @@ public class HomeController {
     @GetMapping(value = "/profile")
     @PreAuthorize("isAuthenticated()")
     public String profilePage(Model model){
+        model.addAttribute("currentUser",getUserData());
         return "profile";
 
     }

@@ -32,7 +32,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
                          <a class="nav-link" href="/addproduct">Add product</a>
                      </li>
                      <li class="nav-item">
-                         <a class="nav-link" href="/addcategory">Add category</a>
+                         <a class="nav-link" th:href="@{'/addcategory'}" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')">Add category</a>
                      </li>
                      <li class="nav-item">
                          <a class="nav-link" href="#">Add keyword</a>
@@ -46,6 +46,10 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
                      <li class="nav-item" sec:authorize="isAnonymous()">
                          <a class="nav-link" th:href="@{'/login'}">login</a>
                      </li>
+                     <li class="nav-item" sec:authorize="isAuthenticated()">
+                         <a class="nav-link" th:href="@{'/profile'}" th:text="${currentUser.fName}"></a>
+                     </li>
+
                      <li class="nav-item" sec:authorize="isAuthenticated()">
                          <a class="nav-link" href="JavaScript:void(0)" onclick="document.getElementById('logoutFormId').submit()" >logout</a>
                      </li>
