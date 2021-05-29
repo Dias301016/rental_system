@@ -35,7 +35,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
                          <a class="nav-link" th:href="@{'/addcategory'}" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')">Add category</a>
                      </li>
                      <li class="nav-item">
-                         <a class="nav-link" href="#">Add keyword</a>
+                         <a class="nav-link" th:href="@{'/addkeyword'}" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')">Add keyword</a>
                      </li>
                      <li class="nav-item">
                          <a class="nav-link" th:href="@{'?lang=en'}">EN</a>

@@ -16,9 +16,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class HomeController {
@@ -26,6 +26,7 @@ public class HomeController {
     private ProductService productService;
     @Autowired
     private UserService userService;
+
     @GetMapping(value = "/")
     public String home(Model model) {
         model.addAttribute("currentUser",getUserData());
@@ -47,6 +48,21 @@ public class HomeController {
         return "/addproduct";
     }
 
+    @PostMapping("/search")
+    public String search(String search, Model model){
+        model.addAttribute("currentUser",getUserData());
+        HashSet<Products> set = new HashSet<>();
+        List<Products> list = productService.getAllProducts();
+        list.sort(Comparator.comparing(Products::getPostDate));
+        for(Products n : list) {
+            if(n.getName().contains(search) || n.getDescription().contains(search) || n.getCategory().getName().contains(search) || n.getAuthor().getFName().contains(search)) {
+                set.add(n);
+            }
+        }
+        model.addAttribute("search",set);
+        return "home";
+    }
+
     @PostMapping(value = "/addproduct")
     public String addProduct(@RequestParam(name = "category_id",defaultValue = "0") Long id,
             @RequestParam(name = "author_id",defaultValue = "0") Long authorId,
@@ -57,12 +73,14 @@ public class HomeController {
             Categories ctg = productService.getCategory(id);
             Users usr = userService.getUser(authorId);
             if(ctg!=null) {
+                Date data = new Date();
                 Products product = new Products();
                 product.setName(name);
                 product.setPrice(price);
                 product.setDescription(description);
                 product.setCategory(ctg);
                 product.setAuthor(usr);
+                product.setPostDate(data);
                 productService.addProduct(product);
 
             }
@@ -224,7 +242,7 @@ public class HomeController {
 
         if(kwd!=null) {
             kwd.setName(name);
-            productService.saveCategory(kwd);
+            productService.saveKeyword(kwd);
         }
         return "redirect:/addkeyword";
     }

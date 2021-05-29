@@ -1,10 +1,12 @@
 package kz.project.RentalSystem.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -12,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "t_products")
-public class Products {
+public class Products implements Comparable<Products>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -35,6 +37,14 @@ public class Products {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Keywords> keywords;
+
+    @Column(name = "post_date")
+    private Date postDate;
+
+    @Override
+    public int compareTo(Products product) {
+        return product.getPostDate().compareTo(this.getPostDate());
+    }
 
 
 }

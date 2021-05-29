@@ -28,9 +28,36 @@
 
     </table>
 
+<form th:action="@{/search}" method="post" th:object="${search}">
+    <label for="search">Search:</label>
+    <input name="search" id="search">
+    <div th:if="${not #sets.isEmpty(search)}">
+        <h4>Search Results</h4>
+        <ul th:each="item : ${search}">
+            <div class="shadow">
+                <a th:href="@{'/details/'+${item.id}}">
+
+                            <a  th:href="@{'/details/'+${item.id}}">
+                                <h2 th:text="${item.id}"></h2>
+                            </a>
+                            <p th:text="${item.name}"></p>
+                </a>
+            </div>
+        </ul>
+        <a th:href="@{'/'}">domoi</a>
+    </div>
+    <div th:unless="${not #sets.isEmpty(search)}">
+
+        <a th:href="@{'/'}">domoi</a>
+    </div>
+
+
+
+
+
+</form>
 </div>
-
-
+</div>
 
 </body>
 </html>
