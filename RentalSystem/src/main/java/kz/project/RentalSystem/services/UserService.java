@@ -1,5 +1,6 @@
 package kz.project.RentalSystem.services;
 
+import kz.project.RentalSystem.entities.Roles;
 import kz.project.RentalSystem.entities.Users;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,4 +13,6 @@ public interface UserService extends UserDetailsService {
     Users createUser(Users user);
     List<Users> getAllUsers();
     Users saveUser(Users user);
+
+
 }

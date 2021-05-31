@@ -1,10 +1,9 @@
 package kz.project.RentalSystem.contollers;
 
-import kz.project.RentalSystem.config.WebMvcConfig;
-import kz.project.RentalSystem.entities.Categories;
-import kz.project.RentalSystem.entities.Keywords;
-import kz.project.RentalSystem.entities.Products;
-import kz.project.RentalSystem.entities.Users;
+import kz.project.RentalSystem.entities.*;
+import kz.project.RentalSystem.repositories.ProductRepository;
+import kz.project.RentalSystem.repositories.RoleRepository;
+import kz.project.RentalSystem.repositories.UserRepository;
 import kz.project.RentalSystem.services.ProductService;
 import kz.project.RentalSystem.services.UserService;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -37,6 +36,10 @@ public class HomeController {
     private ProductService productService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private UserRepository userRepository;
     @Value("${file.avatar.viewPath}")
     private String viewPath;
     @Value("${file.avatar.uploadPath}")
@@ -49,7 +52,8 @@ public class HomeController {
     private String uploadPath2;
     @Value("${file.product.defaultPicture2}")
     private String defaultPicture2;
-
+    @Autowired
+    private RoleRepository roleRepository;
 
     @GetMapping(value = "/")
     public String home(Model model) {
@@ -100,10 +104,10 @@ public class HomeController {
 
     @PostMapping(value = "/addproduct")
     public String addProduct(@RequestParam(name = "category_id",defaultValue = "0") Long id,
-            @RequestParam(name = "author_id",defaultValue = "0") Long authorId,
-        @RequestParam(name = "name", defaultValue = "No item") String name,
-        @RequestParam(name = "description", defaultValue = "NO DESCR") String description,
-        @RequestParam(name = "price", defaultValue = "0") int price)
+                             @RequestParam(name = "author_id",defaultValue = "0") Long authorId,
+                             @RequestParam(name = "name", defaultValue = "No item") String name,
+                             @RequestParam(name = "description", defaultValue = "NO DESCR") String description,
+                             @RequestParam(name = "price", defaultValue = "0") int price)
         {
             Categories ctg = productService.getCategory(id);
             Users usr = userService.getUser(authorId);
@@ -122,6 +126,91 @@ public class HomeController {
 
         return "redirect:/";
         }
+
+
+    @GetMapping(path = "/users")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')")
+    public String usersPage(Model model){
+
+        model.addAttribute("currentUser", getUserData());
+
+        List<Users> us = userService.getAllUsers();
+        List<Users> moders = new ArrayList<>();
+        List<Users> users = new ArrayList<>();
+
+        Roles moder=roleRepository.findById(3L).orElse(null);
+
+        Roles admin=roleRepository.findById(2L).orElse(null);
+
+        for (Users u : us)
+            if(!u.getRoles().contains(admin) && !u.getRoles().contains(moder))
+                moders.add(u);
+
+        for (Users u : us)
+            if(!u.getRoles().contains(admin)) {
+                users.add(u);
+            }
+
+        model.addAttribute("userList", users);
+        model.addAttribute("moders",moders);
+
+        return "users";
+    }
+    @GetMapping("/user/{id}")
+        @PreAuthorize("isAuthenticated()")
+    public String getUser(@PathVariable Long id, Model model) {
+        Users u = userService.getUser(id);
+        model.addAttribute("currentUser", getUserData());
+        model.addAttribute("item", u);
+        Roles r = null;
+        for(Roles role : u.getRoles()) {
+            r= role;
+        }
+        boolean bool=false;
+        if (r.getRole().equals("ROLE_MODERATOR"))
+            bool=true;
+        model.addAttribute("bool", bool);
+        return "user";
+    }
+
+    @PostMapping("/deleteUser")
+    @PreAuthorize("isAuthenticated()")
+    public String deleteuser() {
+        Users u = getUserData();
+        List<Products> products = productRepository.findAllByAuthor(u);
+        productRepository.deleteAll(products);
+        userRepository.delete(u);
+        return "redirect:/users";
+    }
+    @PostMapping("/deleteUser/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public String deleteuse(@PathVariable Long id) {
+        Users u = userRepository.findById(id).orElse(null);
+        List<Products> posts = productRepository.findAllByAuthor(u);
+        productRepository.deleteAll(posts);
+        userRepository.delete(u);
+        return "redirect:/users";
+    }
+
+    @PostMapping("/updateUser/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public String updateuser(@PathVariable Long id, @RequestParam(required = false) Boolean moder) {
+        Users u = userService.getUser(id);
+        Roles user = roleRepository.findById(1L).orElse(null);
+        Roles moderator = roleRepository.findById(3L).orElse(null);
+        List<Roles> set = u.getRoles();
+        if (moder != null) {
+            set.remove(user);
+            set.add(moderator);
+        }
+        else {
+            set.remove(moderator);
+            set.add(user);
+        }
+        u.setRoles(set);
+        userService.saveUser(u);
+        return "redirect:/user/"+id;
+    }
 
         private Users getUserData(){
 

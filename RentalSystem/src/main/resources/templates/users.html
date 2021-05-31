@@ -1,0 +1,88 @@
+<html xmlns:th="http:///www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layout/main.html">
+
+<div class="container" layout:fragment="main_content">
+    <script>
+        $('input[type="checkbox"]').on('change', function () {
+            $(this).siblings('input[type="checkbox"]').prop('checked', false);
+        });
+    </script>
+
+    <div class="row" sec:authorize="hasAnyRole('ROLE_ADMIN')">
+        <div class="col-sm-12">
+            <table cellpadding="20" class="table table-stripped">
+                <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        ROLE 1
+                    </th>
+                    <th>
+                        ROLE 2
+                    </th>
+                    <th>
+                        DEtails
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="usr : ${userList}">
+                    <td th:text="${usr.id}"></td>
+                    <td th:text="${usr.email}"></td>
+                    <td th:text="${usr.fName}"></td>
+                    <td th:each="role : ${usr.roles}" th:if="${role.role == 'ROLE_MODERATOR'}"><a>Moderator</a></td>
+                    <td th:each="role : ${usr.roles}" th:unless="${role.role == 'ROLE_MODERATOR'}"><a>User</a></td>
+                    <td>
+                        <a th:href="@{'/user/'+${usr.id}}"  style="color:black;">details</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row" sec:authorize="hasAnyRole('ROLE_MODERATOR')">
+        <div class="col-sm-12">
+            <table cellpadding="20" class="table table-stripped">
+                <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <th > Email
+                    </th>
+                    <th >
+                        Name
+                    </th>
+                    <th>
+                        ROLES
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="usr : ${moders}">
+                    <td th:text="${usr.id}"></td>
+                    <td th:text="${usr.email}"></td>
+                    <td th:text="${usr.fName}"></td>
+                    <td th:each="role : ${usr.roles}" th:text="${role.role}"></td>
+                    <td>
+                        <a th:href="@{'/user/'+${usr.id}}">DETAILS</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
