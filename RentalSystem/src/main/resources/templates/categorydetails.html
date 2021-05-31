@@ -10,5 +10,10 @@
         <button>save category</button>
 
     </form>
+    <form th:action="@{'/deletecategory'}" method="post">
+        <input type="hidden" name="id" th:value="${category.id}">
+        <button>delete category</button>
+
+    </form>
 
 </div>

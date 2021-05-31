@@ -32,22 +32,13 @@ public class    ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Products> getAllProducts(){
-        return productRepository.findAllByPriceIsGreaterThan(0);
-
-    }
+    public List<Products> getAllProducts(){ return productRepository.findAllByPriceIsGreaterThan(0); }
 
     @Override
-    public void deleteProduct(Products product) {
-
-        productRepository.delete(product);
-    }
+    public void deleteProduct(Products product) { productRepository.delete(product); }
 
     @Override
-    public Products saveProduct(Products product) {
-
-        return productRepository.save(product);
-    }
+    public Products saveProduct(Products product) {        return productRepository.save(product); }
 
     @Override
     public List<Categories> getAllCategories() {
@@ -68,6 +59,14 @@ public class    ProductServiceImpl implements ProductService {
     public Categories getCategory(Long id) {
         return categoryRepository.getOne(id);
     }
+
+    @Override
+    public List<Products> getAllByKeyword(Keywords keyword) {
+        return productRepository.findAllByKeywords(keyword);
+    }
+
+    @Override
+    public List<Products> getAllByCategories(Long id) {     return productRepository.findAllByCategory_Id(id); }
 
     @Override
     public void deleteCategory(Categories category) {

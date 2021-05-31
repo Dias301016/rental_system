@@ -12,6 +12,8 @@ public interface ProductService {
     Products getProduct(Long id);
     void deleteProduct(Products product);
     Products saveProduct(Products product);
+    List<Products> getAllByCategories(Long id);
+    List<Products> getAllByKeyword(Keywords keyword);
 
     List<Categories> getAllCategories();
     Categories addCategory(Categories category);
@@ -19,9 +21,11 @@ public interface ProductService {
     Categories getCategory(Long id);
     void deleteCategory(Categories category);
 
+
     List<Keywords> getAllKeywords();
     Keywords addKeyword(Keywords keyword);
     Keywords saveKeyword(Keywords keyword);
     Keywords getKeyword(Long id);
     void deleteKeyword(Keywords keyword);
+
 }

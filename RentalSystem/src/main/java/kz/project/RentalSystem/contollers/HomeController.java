@@ -7,7 +7,12 @@ import kz.project.RentalSystem.entities.Products;
 import kz.project.RentalSystem.entities.Users;
 import kz.project.RentalSystem.services.ProductService;
 import kz.project.RentalSystem.services.UserService;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,8 +21,14 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Controller
@@ -26,6 +37,19 @@ public class HomeController {
     private ProductService productService;
     @Autowired
     private UserService userService;
+    @Value("${file.avatar.viewPath}")
+    private String viewPath;
+    @Value("${file.avatar.uploadPath}")
+    private String uploadPath;
+    @Value("${file.avatar.defaultPicture}")
+    private String defaultPicture;
+    @Value("${file.product.viewPath2}")
+    private String viewPath2;
+    @Value("${file.product.uploadPath2}")
+    private String uploadPath2;
+    @Value("${file.product.defaultPicture2}")
+    private String defaultPicture2;
+
 
     @GetMapping(value = "/")
     public String home(Model model) {
@@ -54,11 +78,22 @@ public class HomeController {
         HashSet<Products> set = new HashSet<>();
         List<Products> list = productService.getAllProducts();
         list.sort(Comparator.comparing(Products::getPostDate));
+        List<Keywords> keywords = productService.getAllKeywords();
         for(Products n : list) {
-            if(n.getName().contains(search) || n.getDescription().contains(search) || n.getCategory().getName().contains(search) || n.getAuthor().getFName().contains(search)) {
-                set.add(n);
+            for (Keywords keyword : keywords) {
+
+                if (n.getName().contains(search) || n.getDescription().contains(search) || n.getCategory().getName().contains(search) || n.getAuthor().getEmail().contains(search)) {
+                    set.add(n);
+                }   else if (keyword.getName().contains(search)){
+                    List<Products> products1 = productService.getAllByKeyword(keyword);
+                    for(Products a :products1){
+                        set.add(a);
+
+                    }
+                }
+                }
             }
-        }
+
         model.addAttribute("search",set);
         return "home";
     }
@@ -102,6 +137,7 @@ public class HomeController {
 
 
      @GetMapping(value = "/register")
+     @PreAuthorize("isAnonymous()")
      public String register(Model model){
 
         model.addAttribute("currentUser",getUserData());
@@ -114,7 +150,7 @@ public class HomeController {
                               @RequestParam(name = "user_password") String password,
                               @RequestParam(name ="re_user_password") String rePassword,
                               @RequestParam(name = "user_first_name") String firstName)
-    {
+     {
 
         if(password.equals(rePassword)){
             Users newUser = new Users();
@@ -133,6 +169,7 @@ public class HomeController {
      }
 
     @GetMapping(value = "/details/{idshka}")
+    @PreAuthorize("isAuthenticated()")
     public String details(Model model, @PathVariable(name = "idshka") Long id){
         Products product = productService.getProduct(id);
         model.addAttribute("product",product);
@@ -147,6 +184,59 @@ public class HomeController {
         return "details";
     }
 
+    @PostMapping(value = "/uploadproduct")
+    @PreAuthorize("isAuthenticated()")
+    public String uploadAvatar(@RequestParam(name = "product_picture")MultipartFile file,
+                               @RequestParam(name = "id")Long id){
+
+        if(file.getContentType().equals("image/jpeg")||file.getContentType().equals("image/png")) {
+
+            try {
+                Products currentProduct = productService.getProduct(id);
+                String picName = DigestUtils.sha1Hex("picture_of_"+currentProduct.getId()+"!");
+
+                byte[] bytes = file.getBytes();
+                Path path = Paths.get(uploadPath2+picName+".jpg");
+                Files.write(path, bytes);
+                currentProduct.setProductPicture(picName);
+                productService.saveProduct(currentProduct);
+                return "redirect:/details/"+id;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return "redirect:/";
+
+    }
+    @PostMapping(value = "/deleteproductpicture")
+    @PreAuthorize("isAuthenticated()")
+    public String deleteProductPicture(@RequestParam(name="id") Long id){
+        Products currentProduct = productService.getProduct(id);
+        if(currentProduct!=null){
+            currentProduct.setProductPicture("<null>");
+            productService.saveProduct(currentProduct);
+        }
+        return "redirect:/details/"+id;
+    }
+    @GetMapping(value = "/viewproduct/{url}",produces = {MediaType.IMAGE_JPEG_VALUE})
+    public @ResponseBody byte[] viewProductPicture(@PathVariable(name="url") String url) throws IOException {
+        String pictureUrl = viewPath2+defaultPicture2;
+        if(url!=null&&!url.equals("null")){
+            pictureUrl=viewPath2+url+".jpg";
+
+        }
+        InputStream in;
+        try{
+            ClassPathResource resource = new ClassPathResource(pictureUrl);
+            in= resource.getInputStream();
+        }catch (Exception e){
+            ClassPathResource resource = new ClassPathResource(viewPath2+defaultPicture2);
+            in =resource.getInputStream();
+            e.printStackTrace();
+        }
+        return IOUtils.toByteArray(in);
+    }
     @GetMapping(value = "/addcategory")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')")
     public String addCategory(Model model){
@@ -232,6 +322,28 @@ public class HomeController {
             }
         return "redirect:/addcategory";
     }
+    @PostMapping(value = "/deletecategory")
+    public String deleteCategory(
+            @RequestParam(name = "id",defaultValue = "0") Long id)
+
+    {
+        Categories ctg = productService.getCategory(id);
+        List<Products> products = productService.getAllByCategories(id);
+
+        Categories def = productService.getCategory(3L);
+
+        if(ctg!=null&&id!=3L) {
+
+            productService.deleteCategory(ctg);
+            for (Products product:products){
+                product.setCategory(def);
+                productService.saveProduct(product);
+            }
+        }
+
+
+        return "redirect:/addcategory";
+    }
     @PostMapping(value = "/savekeyword")
     public String saveKeyword(
             @RequestParam(name = "id",defaultValue = "0") Long id,
@@ -246,7 +358,19 @@ public class HomeController {
         }
         return "redirect:/addkeyword";
     }
+    @PostMapping(value = "/deletekeyword")
+    public String deleteKeyword(
+            @RequestParam(name = "id",defaultValue = "0") Long id)
 
+    {
+        Keywords kwd = productService.getKeyword(id);
+
+        if(kwd!=null) {
+
+           productService.deleteKeyword(kwd);
+        }
+        return "redirect:/addkeyword";
+    }
 
 
     @PostMapping(value = "/saveproduct")
@@ -332,6 +456,48 @@ public class HomeController {
         model.addAttribute("currentUser",getUserData());
         return "profile";
 
+    }
+
+    @PostMapping(value = "/uploadavatar")
+    public String uploadAvatar(@RequestParam(name = "user_avatar")MultipartFile file){
+
+        if(file.getContentType().equals("image/jpeg")||file.getContentType().equals("image/png")) {
+
+            try {
+                Users currentUser = getUserData();
+                String picName = DigestUtils.sha1Hex("avatar_of_"+currentUser.getId()+"!");
+
+                byte[] bytes = file.getBytes();
+                Path path = Paths.get(uploadPath +picName +".jpg");
+                Files.write(path, bytes);
+                currentUser.setUserAvatar(picName);
+                userService.saveUser(currentUser);
+                return "redirect:/profile?success";
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+            return "redirect:/";
+
+        }
+        @GetMapping(value = "/viewphoto/{url}",produces = {MediaType.IMAGE_JPEG_VALUE})
+        public @ResponseBody byte[] viewProfilePhoto(@PathVariable(name="url") String url) throws IOException {
+        String pictureUrl = viewPath+defaultPicture;
+        if(url!=null&&!url.equals("null")){
+            pictureUrl=viewPath+url+".jpg";
+
+        }
+            InputStream in;
+        try{
+            ClassPathResource resource = new ClassPathResource(pictureUrl);
+            in= resource.getInputStream();
+        }catch (Exception e){
+            ClassPathResource resource = new ClassPathResource(viewPath+defaultPicture);
+            in =resource.getInputStream();
+            e.printStackTrace();
+        }
+        return IOUtils.toByteArray(in);
     }
     @PostMapping(value = "/assignkeyword")
     public String assignKeyword(@RequestParam(name="products_id") Long productId,

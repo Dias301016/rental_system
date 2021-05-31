@@ -6,5 +6,14 @@
 <div class="container" layout:fragment="main_content">
 
     <h3> <span th:text="${currentUser.fName}"></span></h3>
-
+    <div class="row">
+        <img th:src="@{'/viewphoto/'+${currentUser.userAvatar}}" class="my-3" style="width: 100%;">
+    <form th:action="@{/uploadavatar}" method="post" enctype="multipart/form-data">
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" id="customFile" name="user_avatar">
+            <label class="custom-file-label" for="customFile">Choose file</label>
+            <button class="btn btn-success mt-3">Upload file</button>
+        </div>
+    </form>
+    </div>
 </div>

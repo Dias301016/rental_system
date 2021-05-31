@@ -11,4 +11,10 @@
 
     </form>
 
+    <form th:action="@{'/deletekeyword'}" method="post">
+        <input type="hidden" name="id" th:value="${keyword.id}">
+        <button>delete keyword</button>
+
+    </form>
+
 </div>

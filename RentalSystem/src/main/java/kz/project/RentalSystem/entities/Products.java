@@ -41,6 +41,9 @@ public class Products implements Comparable<Products>{
     @Column(name = "post_date")
     private Date postDate;
 
+    @Column(name = "product_picture")
+    private String productPicture;
+
     @Override
     public int compareTo(Products product) {
         return product.getPostDate().compareTo(this.getPostDate());

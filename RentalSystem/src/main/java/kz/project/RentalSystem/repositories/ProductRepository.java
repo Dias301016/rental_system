@@ -1,5 +1,7 @@
 package kz.project.RentalSystem.repositories;
 
+import javassist.compiler.ast.Keyword;
+import kz.project.RentalSystem.entities.Keywords;
 import kz.project.RentalSystem.entities.Products;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,4 +13,6 @@ import java.util.List;
 @Transactional
 public interface ProductRepository extends JpaRepository<Products,Long> {
         List<Products> findAllByPriceIsGreaterThan(int price);
+        List<Products> findAllByCategory_Id(Long id);
+        List<Products> findAllByKeywords(Keywords keyword);
 }
