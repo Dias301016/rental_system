@@ -5,8 +5,8 @@
 
 <div class="container" layout:fragment="main_content">
     <form th:action="@{'/addkeyword'}" method="post">
-        <input type="text"   name="name">
-        <button>add keyword</button>
+        <label>Keyword Name</label><input class="form-control" type="text"   name="name">
+        <br><button class="btn">Add keyword</button>
     </form>
 
     <table class="table">

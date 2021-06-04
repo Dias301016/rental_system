@@ -15,7 +15,17 @@
             <th scope="col">Details</th>
         </tr>
         </thead>
+
+        <!--<div class="container">
+            <div class="row">
+                <div class="col-sm-4">
+                    <img th:src="">
+                    <h4> </h4>
+                    <p> KZT</p>
+                </div>
+            </div>-->
         <tbody>
+
         <tr th:each = "it:${producty}">
             <td th:text = ${it.id}></td>
             <td th:text = ${it.name}></td>
@@ -25,12 +35,13 @@
             <td> <a th:href="@{'/details/' + ${it.id}}" >  >Details</a></td>
         </tr>
         </tbody>
+        </div>
 
     </table>
 
-<form th:action="@{/search}" method="post" th:object="${search}">
+<form th:action="@{/search}" method="post" th:object="${search} ">
     <label for="search">Search:</label>
-    <input name="search" id="search">
+    <input name="search" id="search" class="form-control">
     <div th:if="${not #sets.isEmpty(search)}">
         <h4>Search Results</h4>
         <ul th:each="item : ${search}">
@@ -44,11 +55,6 @@
                 </a>
             </div>
         </ul>
-        <a th:href="@{'/'}">domoi</a>
-    </div>
-    <div th:unless="${not #sets.isEmpty(search)}">
-
-        <a th:href="@{'/'}">domoi</a>
     </div>
 
 

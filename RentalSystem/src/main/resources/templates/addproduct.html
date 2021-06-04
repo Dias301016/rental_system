@@ -5,16 +5,17 @@
 
 <div class="container" layout:fragment="main_content">
         <form th:action="@{'/addproduct'}" method="post">
+
             <input type="hidden" name="author_id" th:value="${currentUser.id}">
-            <input type="text"   name="name">
-            <input type="text"   name="description">
-            <input type="number" name="price">
-            <select name="category_id">
+            <br><label>Product name</label><input class="form-control" type="text"   name="name">
+            <br><label>Description</label><input class="form-control" type="text"   name="description">
+            <br><label>Price</label><input class="form-control" type="number" name="price">
+            <br><label>Category</label><select class="form-control" name="category_id">
                 <option th:each="ctg:${categories}" th:text="${ctg.name}" th:value = "${ctg.id}">
 
                 </option>
             </select>
-            <button>add item</button>
+            <br><button class="btn btn-dark">Add item</button>
 
         </form>
 

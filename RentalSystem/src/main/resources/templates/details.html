@@ -7,10 +7,10 @@
         <div>
             <div>
             <input type="text"  class="form-control plain-text"  th:value="${product.name}" >
-            <input type="text"  class="form-control plain-text" th:value="${product.description}" >
-            <input type= "number" class="form-control plain-text" th:value="${product.price}">
-            <input type= "text" class="form-control plain-text"  th:value="${product.category.name}">
-            <img th:src="@{'/viewproduct/'+${product.productPicture}}" class="my-3" style="width: 100%;">
+            <br><input type="text"  class="form-control plain-text" th:value="${product.description}" >
+            <br><input type= "number" class="form-control plain-text" th:value="${product.price}">
+            <br><input type= "text" class="form-control plain-text"  th:value="${product.category.name}">
+            <br><img th:src="@{'/viewproduct/'+${product.productPicture}}" class="my-3" style="width: 50%;">
             </div>
             <div class="form-group">
                 <div th:if="${product.author.id}==${currentUser.id}">
@@ -20,21 +20,21 @@
                             <div class="custom-file">
                                 <input type="hidden" name="id" th:value="${product.id}">
                                 <input type="file" class="custom-file-input" id="customFile" name="product_picture">
-                                <label class="custom-file-label" for="customFile">Choose file</label>
-                                <button class="btn btn-success mt-3">Upload file</button>
+                                <br><label class="custom-file-label" for="customFile">Choose file</label>
+                                <button class="btn btn-dark mt-3">Upload file</button>
                             </div>
                         </form>
                     </div>
                     <div class="row mt-3">
                         <form th:action="@{/deleteproductpicture}" method="post">
                             <input type="hidden" name="id" th:value="${product.id}">
-                            <button> delete photo</button>
+                            <button class="btn btn-dark"> Delete photo</button>
                         </form>
                     </div>
                 </div>
                 <div class="form-group">
                     <div th:unless="${product.author.id}==${currentUser.id}">
-                        <a th:href="@{'/saveproduct/' + ${product.id}}" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')">edit item</a>
+                        <button class="btn btn-dark" <a th:href="@{'/saveproduct/' + ${product.id}}" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')">Edit item</a>
                         <div class="row mt-3">
                             <form th:action="@{/deleteproductpicture}" method="post">
                                 <input type="hidden" name="id" th:value="${product.id}">

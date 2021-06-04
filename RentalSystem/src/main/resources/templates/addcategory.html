@@ -5,8 +5,9 @@
 
 <div class="container" layout:fragment="main_content">
     <form th:action="@{'/addcategory'}" method="post">
-        <input type="text"   name="name">
-        <button>add category</button>
+        <label>Category name</label><input type="text"   name="name" class="form-control">
+        <br>
+        <button class="btn">Add category</button>
     </form>
 
     <table class="table">
