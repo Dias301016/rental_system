@@ -17,6 +17,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,8 @@ import java.util.*;
 
 @Controller
 public class HomeController {
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private ProductService productService;
     @Autowired
@@ -173,14 +176,21 @@ public class HomeController {
         return "user";
     }
 
-    @PostMapping("/deleteUser")
-    @PreAuthorize("isAuthenticated()")
-    public String deleteuser() {
-        Users u = getUserData();
-        List<Products> products = productRepository.findAllByAuthor(u);
-        productRepository.deleteAll(products);
+    @PostMapping("/editUser")
+    public String edituser(@RequestParam String name, @RequestParam String password) {
+        Users user = getUserData();
+        user.setFName(name);
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+        return "redirect:/profile";
+    }
+        @PostMapping("/deleteProfile/{id}")
+    public String deleteuser(@PathVariable Long id) {
+        Users u = userRepository.findById(id).orElse(null);
+        List<Products> posts = productRepository.findAllByAuthor(u);
+        productRepository.deleteAll(posts);
         userRepository.delete(u);
-        return "redirect:/users";
+        return "redirect:/logout";
     }
     @PostMapping("/deleteUser/{id}")
     @PreAuthorize("isAuthenticated()")
@@ -248,7 +258,7 @@ public class HomeController {
             newUser.setEmail(email);
 
             if (userService.createUser(newUser)!=null){
-                return "redirect:/register?success";
+                return "redirect:/login?success";
 
 
             }
@@ -543,6 +553,8 @@ public class HomeController {
     @PreAuthorize("isAuthenticated()")
     public String profilePage(Model model){
         model.addAttribute("currentUser",getUserData());
+        List<Products> products = productService.getAllByAuthor(getUserData());
+        model.addAttribute("produkty",products);
         return "profile";
 
     }

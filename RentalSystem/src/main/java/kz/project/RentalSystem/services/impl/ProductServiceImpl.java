@@ -3,6 +3,7 @@ package kz.project.RentalSystem.services.impl;
 import kz.project.RentalSystem.entities.Categories;
 import kz.project.RentalSystem.entities.Keywords;
 import kz.project.RentalSystem.entities.Products;
+import kz.project.RentalSystem.entities.Users;
 import kz.project.RentalSystem.repositories.CategoryRepository;
 import kz.project.RentalSystem.repositories.KeywordRepository;
 import kz.project.RentalSystem.repositories.ProductRepository;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class    ProductServiceImpl implements ProductService {
+public class  ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
@@ -63,6 +64,11 @@ public class    ProductServiceImpl implements ProductService {
     @Override
     public List<Products> getAllByKeyword(Keywords keyword) {
         return productRepository.findAllByKeywords(keyword);
+    }
+
+    @Override
+    public List<Products> getAllByAuthor(Users user) {
+        return productRepository.findAllByAuthor(user);
     }
 
     @Override

@@ -3,6 +3,7 @@ package kz.project.RentalSystem.services;
 import kz.project.RentalSystem.entities.Categories;
 import kz.project.RentalSystem.entities.Keywords;
 import kz.project.RentalSystem.entities.Products;
+import kz.project.RentalSystem.entities.Users;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ public interface ProductService {
     Products saveProduct(Products product);
     List<Products> getAllByCategories(Long id);
     List<Products> getAllByKeyword(Keywords keyword);
+    List<Products> getAllByAuthor(Users user);
 
     List<Categories> getAllCategories();
     Categories addCategory(Categories category);

@@ -17,4 +17,50 @@
         </div>
     </form>
     </div>
+
+    <div>
+
+        <a th:each="role : ${currentUser.roles}" th:if="${role.role == 'ROLE_MODERATOR'}"><a th:text="#{label.moder}"></a></a>
+        <a th:each="role : ${currentUser.roles}" th:if="${role.role == 'ROLE_USER'}"><a th:text="#{label.user}"></a></a>
+        <form th:action="@{'/editUser'}" method="post">
+            <input type="text" name="name" th:value="${currentUser.fName}" required
+                   class="single-input inp">
+            <input type="password" name="password"  required
+                   class="single-input inp">
+            <button type="submit" class="genric-btn success" >Edit</button>
+        </form>
+        <form th:action="@{'/deleteProfile/' + ${currentUser.id}}" method="post">
+            <button type="submit" class="genric-btn danger" >Delete profile</button>
+        </form>
+
+    </div>
+
+    <div>
+        <h1>My ads</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Description</th>
+            <th scope="col">Category</th>
+            <th scope="col">Details</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr th:each = "it:${produkty}">
+            <td th:text = ${it.id}></td>
+            <td th:text = ${it.name}></td>
+            <td th:text = ${it.price}></td>
+            <td th:text = ${it.description}></td>
+            <td th:text = ${it.category.name}></td>
+            <td> <a th:href="@{'/details/' + ${it.id}}" >  >Details</a></td>
+        </tr>
+        </tbody>
+        <!---/div>-->
+
+    </table>
+    </div>
 </div>
