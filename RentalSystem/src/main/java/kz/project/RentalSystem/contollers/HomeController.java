@@ -177,9 +177,12 @@ public class HomeController {
     }
 
     @PostMapping("/editUser")
-    public String edituser(@RequestParam String name, @RequestParam String password) {
+    public String edituser(@RequestParam String name,
+                           @RequestParam String password,
+                           @RequestParam String phoneNumber) {
         Users user = getUserData();
         user.setFName(name);
+        user.setPhoneNumber(phoneNumber);
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
         return "redirect:/profile";
@@ -248,15 +251,15 @@ public class HomeController {
      public String toRegister(@RequestParam(name ="user_email") String email,
                               @RequestParam(name = "user_password") String password,
                               @RequestParam(name ="re_user_password") String rePassword,
-                              @RequestParam(name = "user_first_name") String firstName)
-     {
+                              @RequestParam(name = "user_first_name") String firstName,
+                              @RequestParam(name = "user_phone_number") String phoneNumber){
 
         if(password.equals(rePassword)){
             Users newUser = new Users();
             newUser.setFName(firstName);
             newUser.setPassword(password);
             newUser.setEmail(email);
-
+            newUser.setPhoneNumber(phoneNumber);
             if (userService.createUser(newUser)!=null){
                 return "redirect:/login?success";
 

@@ -28,6 +28,9 @@ public class Users {
     @Column(name="f_name")
     private String fName;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(name="user_avatar")
     private String userAvatar;
 

@@ -27,6 +27,8 @@
                    class="single-input inp">
             <input type="password" name="password"  required
                    class="single-input inp">
+            <input type="text" name="phoneNumber"  required
+                   class="single-input inp">
             <button type="submit" class="genric-btn success" >Edit</button>
         </form>
         <form th:action="@{'/deleteProfile/' + ${currentUser.id}}" method="post">

@@ -12,6 +12,7 @@
             <th scope="col">Price</th>
             <th scope="col">Description</th>
             <th scope="col">Category</th>
+            <th scope="col">Phone number</th>
             <th scope="col">Details</th>
         </tr>
         </thead>
@@ -32,6 +33,7 @@
             <td th:text = ${it.price}></td>
             <td th:text = ${it.description}></td>
             <td th:text = ${it.category.name}></td>
+            <td th:text = ${it.author.phoneNumber}></td>
             <td> <a th:href="@{'/details/' + ${it.id}}" >  >Details</a></td>
         </tr>
         </tbody>
