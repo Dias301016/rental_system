@@ -18,7 +18,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
  <div class="container-fluid">
      <nav class="navbar navbar-inverse navbar-expand-lg navbar-light bg-light">
          <div class="container-fluid">
-             <a class="navbar-brand" href="#">Rental service</a>
+             <a class="navbar-brand" href="/">Rental service</a>
              <!--<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                  <span class="navbar-toggler-icon"></span>
              </button>-->
@@ -28,36 +28,36 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
                              <a class="nav-link active" aria-current="page" href="/" th:text="#{label.home}"></a>
                      </li>
                      <li class="nav-item">
-                         <a class="nav-link" href="/addproduct">Add product</a>
+                         <a class="nav-link" href="/addproduct" th:text="#{label.addproduct}"></a>
                      </li>
                      <li class="nav-item">
-                         <a class="nav-link" th:href="@{'/addcategory'}" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')">Add category</a>
+                         <a class="nav-link" th:href="@{'/addcategory'}" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')" th:text="#{label.addcategory}"></a>
                      </li>
                      <li class="nav-item">
-                         <a class="nav-link" th:href="@{'/addkeyword'}" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')">Add keyword</a>
+                         <a class="nav-link" th:href="@{'/addkeyword'}" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')" th:text="#{label.addkeyword}"></a>
                      </li>
                  </ul>
                  <ul class="nav navbar-nav navbar-right">
                      <li class="nav-item">
-                         <a class="nav-link" th:href="@{'?lang=en'}">EN</a>
+                         <a class="nav-link" th:href="@{'?lang=en'}" th:text="#{label.en}"></a>
                      </li>
                      <li class="nav-item">
-                         <a class="nav-link" th:href="@{'?lang=ru'}">РУС</a>
+                         <a class="nav-link" th:href="@{'?lang=ru'}" th:text="#{label.ru}"></a>
                      </li>
                      <li class="nav-item" sec:authorize="isAnonymous()">
-                         <a class="nav-link" th:href="@{'/login'}"><span class="glyphicon glyphicon-log-in"></span>&nbsp;Login</a>
+                         <a class="nav-link" th:href="@{'/login'}"><span class="glyphicon glyphicon-log-in" th:text="#{label.login}"></span>&nbsp;</a>
                      </li>
                      <li class="nav-item" sec:authorize="isAnonymous()">
-                         <a class="nav-link" th:href="@{'/register'}"><span class="glyphicon glyphicon-user"></span> Register</a>
+                         <a class="nav-link" th:href="@{'/register'}"><span class="glyphicon glyphicon-user" th:text="#{label.register}"></span> </a>
                      </li>
                      <li class="nav-item" sec:authorize="isAuthenticated()">
-                         <a class="nav-link" th:href="@{'/profile'}" >Profile</a>
+                         <a class="nav-link" th:href="@{'/profile'}" th:text="#{label.profile}"></a>
                      </li>
                      <li class="nav-item" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')" >
-                         <a class="nav-link" th:href="@{'/users'}">Users</a>
+                         <a class="nav-link" th:href="@{'/users'}" th:text="#{label.users}"></a>
                      </li>
                      <li class="nav-item" sec:authorize="isAuthenticated()">
-                         <a class="nav-link" href="JavaScript:void(0)" onclick="document.getElementById('logoutFormId').submit()" >logout</a>
+                         <a class="nav-link" href="JavaScript:void(0)" onclick="document.getElementById('logoutFormId').submit()" th:text="#{label.logout}" ></a>
                      </li>
                      <form th:action="@{'/logout'}" method="post" id="logoutFormId" sec:authorize="isAuthenticated()"></form>
                  </ul>
